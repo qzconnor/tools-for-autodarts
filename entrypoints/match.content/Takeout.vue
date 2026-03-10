@@ -1,7 +1,4 @@
 <template>
-  <div class="absolute bottom-0 right-0 z-[100] w-full p-4 text-center font-system text-sm text-white">
-    {{ boardId }}
-  </div>
   <Transition
     enter-active-class="transition-opacity duration-300 ease-out"
     enter-from-class="opacity-0"
@@ -43,10 +40,7 @@ onMounted(async () => {
   boardId.value = lobbyData.boardId;
 
   boardDataWatcherUnwatch = AutodartsToolsBoardData.watch((boardData: IBoard) => {
-    if (boardData.boardId !== boardId.value) {
-      console.log("Skipping board data update due to board ID mismatch. Current:", boardId.value, "New:", boardData.boardId);
-      return;
-    }
+    if (boardData.boardId !== boardId.value) return;
     checkStatus(boardData).catch(console.error);
   });
 });
