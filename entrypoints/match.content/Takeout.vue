@@ -1,4 +1,7 @@
 <template>
+  <div class="absolute bottom-0 right-0 z-[100] w-full p-4 text-center font-system text-sm text-white">
+    {{ boardId }}
+  </div>
   <Transition
     enter-active-class="transition-opacity duration-300 ease-out"
     enter-from-class="opacity-0"
@@ -27,14 +30,23 @@
 
 <script setup lang="ts">
 import { twMerge } from "tailwind-merge";
+
 import { waitForElementWithTextContent } from "@/utils";
 import { AutodartsToolsBoardData, type IBoard } from "@/utils/board-data-storage";
 
 const show = ref<boolean>(false);
+const boardId = ref<string | null>(null);
 let boardDataWatcherUnwatch: any;
 
-onMounted(() => {
+onMounted(async () => {
+  const lobbyData = await AutodartsToolsBoardData.getValue();
+  boardId.value = lobbyData.boardId;
+
   boardDataWatcherUnwatch = AutodartsToolsBoardData.watch((boardData: IBoard) => {
+    if (boardData.boardId !== boardId.value) {
+      console.log("Skipping board data update due to board ID mismatch. Current:", boardId.value, "New:", boardData.boardId);
+      return;
+    }
     checkStatus(boardData).catch(console.error);
   });
 });
@@ -52,7 +64,7 @@ async function checkStatus(boardData: IBoard) {
 
 async function handleBackdropClick() {
   show.value = false;
-  (await waitForElementWithTextContent("button", ["Reset", "Zurücksetzen"]))?.click();
+  (await waitForElementWithTextContent("button", [ "Reset", "Zurücksetzen" ]))?.click();
 }
 </script>
 

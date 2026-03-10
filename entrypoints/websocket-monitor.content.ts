@@ -20,6 +20,14 @@ export default defineContentScript({
           // Try to parse JSON data
           const jsonData = JSON.parse(data);
           console.log("[Content Script] Parsed JSON data:", jsonData);
+          const topic = jsonData.topic as string;
+
+          let boardId: string | null = null;
+
+          if (topic.includes("state") && jsonData.channel === "autodarts.boards") {
+            boardId = topic.split(".").shift() || null;
+            jsonData.data.boardId = boardId;
+          }
           processWebSocketMessage(jsonData.channel, jsonData.data).catch(console.error);
         } catch (e) {
           // Not JSON data, don't log
