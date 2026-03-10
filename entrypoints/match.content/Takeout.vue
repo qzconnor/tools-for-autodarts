@@ -27,14 +27,20 @@
 
 <script setup lang="ts">
 import { twMerge } from "tailwind-merge";
+
 import { waitForElementWithTextContent } from "@/utils";
 import { AutodartsToolsBoardData, type IBoard } from "@/utils/board-data-storage";
 
 const show = ref<boolean>(false);
+const boardId = ref<string | null>(null);
 let boardDataWatcherUnwatch: any;
 
-onMounted(() => {
+onMounted(async () => {
+  const lobbyData = await AutodartsToolsBoardData.getValue();
+  boardId.value = lobbyData.boardId;
+
   boardDataWatcherUnwatch = AutodartsToolsBoardData.watch((boardData: IBoard) => {
+    if (boardData.boardId !== boardId.value) return;
     checkStatus(boardData).catch(console.error);
   });
 });
@@ -52,7 +58,7 @@ async function checkStatus(boardData: IBoard) {
 
 async function handleBackdropClick() {
   show.value = false;
-  (await waitForElementWithTextContent("button", ["Reset", "Zurücksetzen"]))?.click();
+  (await waitForElementWithTextContent("button", [ "Reset", "Zurücksetzen" ]))?.click();
 }
 </script>
 

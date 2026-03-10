@@ -1,6 +1,7 @@
 export interface IBoard {
   connected: boolean;
   event: string;
+  boardId: string | null;
   numThrows: number;
   status: string;
 }
@@ -8,6 +9,7 @@ export interface IBoard {
 export const defaultBoardData: IBoard = {
   connected: false,
   event: "",
+  boardId: null,
   numThrows: 0,
   status: "",
 };
